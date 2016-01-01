@@ -83,7 +83,8 @@ DATABASES = {
     }
 }
 
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'images')
+MEDIA_URL = '/images/'
 # Internationalization
 # https://docs.djangoproject.com/en/1.8/topics/i18n/
 

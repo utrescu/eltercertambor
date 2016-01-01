@@ -1,18 +1,26 @@
 # -*- coding: utf-8 -*-
-from django.shortcuts import render
+from django.shortcuts import render, redirect
+from django.core.exceptions import ObjectDoesNotExist
 from django.http import HttpResponse
 
 from .models import Competicio
 
 
-def index(request):
+def principal(request):
     latest_competition_list = Competicio.objects.order_by('-id')[:5]
-    output = ', '.join([p.competicio_text for p in latest_competition_list])
-    return HttpResponse(output)
+    return render(request, 'home.html', latest_competition_list)
 
 
-def competicio(request, competicio_id):
-    return HttpResponse("Llista de problemes de la competicio %s" % competicio_id)
+def llista_competicio(request, competicio_id):
+
+    try:
+        competicio = Competicio.objects.get(id=competicio_id)
+    except ObjectDoesNotExist:
+        return redirect('/')
+
+    problemes = []
+
+    return render(request, 'competicio.html', {'competicio': competicio, 'problemes': problemes})
 
 
 def prova(request, competicio_id, prova_id):
@@ -21,3 +29,7 @@ def prova(request, competicio_id, prova_id):
 
 def estadistiques(request):
     return HttpResponse("Estadistiques")
+
+
+def classificacio(request):
+    return HttpResponse("Not done yet")

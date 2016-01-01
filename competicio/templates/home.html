@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="ca-ES">
+<head>
+    <meta charset="UTF-8">
+    <title>Competicions</title>
+</head>
+<body>
+{% for competicio in latest_competition_list %}
+    <p>{{competicio.text}}</p>
+{% endfor %}
+</body>
+</html>

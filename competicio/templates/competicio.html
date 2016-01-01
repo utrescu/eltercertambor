@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="ca-ES" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ competicio.text }}</title>
+</head>
+<body>
+<table>
+{%  for item in problemes %}
+    <tr><td>{{ forloop.counter }}: <a href="{{item.id}}">{{ item.text }}</a></td></tr>
+{% endfor %}
+</table>
+</body>
+</html>

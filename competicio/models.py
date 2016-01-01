@@ -7,31 +7,31 @@ from django.utils import timezone
 # Create your models here.
 
 class Competicio(models.Model):
-    competicio_text = models.CharField(max_length=200)
-    competicio_imatge = models.ImageField(upload_to='images/',default='images/none.png')
+    text = models.CharField(max_length=200)
+    imatge = models.ImageField(upload_to='images/', default='images/none.png')
 
     def __unicode__(self):
-        return self.competicio_text
+        return self.text
     
     def __str__(self):
-        return self.competicio_text
+        return self.text
 
 #    vots = models.IntegerField(default=0)
 
 
 class Prova(models.Model):
     competicio = models.ForeignKey(Competicio)
-    prova_titol = models.CharField(max_length=200)
-    prova_text = models.CharField(max_length=200)
-    prova_resposta = models.CharField(max_length=200)
-    prova_date = models.DateTimeField('date published')
-    prova_intents = models.BigIntegerField()
+    titol = models.CharField(max_length=200)
+    text = models.TextField()
+    resposta = models.CharField(max_length=200)
+    datainici = models.DateTimeField('date published')
+    intents = models.BigIntegerField()
     
     def enabled(self):
-        return self.prova_date >= timezone.now()
+        return self.datainici >= timezone.now()
     
     def __unicode__(self):
-        return self.competicio + " " + self.prova_titol
+        return self.competicio + " " + self.titol
 
     def __str__(self):
-        return self.competicio + " " + self.prova_titol
+        return self.competicio + " " + self.titol

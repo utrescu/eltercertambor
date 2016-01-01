@@ -22,7 +22,7 @@ class Competicio(models.Model):
 class Prova(models.Model):
     competicio = models.ForeignKey(Competicio)
     titol = models.CharField(max_length=200)
-    text = models.TextField()
+    text = models.TextField(default="prova")
     resposta = models.CharField(max_length=200)
     datainici = models.DateTimeField('date published')
     intents = models.BigIntegerField()

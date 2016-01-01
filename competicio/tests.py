@@ -1,6 +1,7 @@
 # coding=utf-8
 from django.core.urlresolvers import resolve
-from django.test import TestCase
+from django.test import TestCase, Client, RequestFactory
+from django.core.urlresolvers import reverse
 from django.template.loader import render_to_string
 from django.http import HttpRequest
 
@@ -17,8 +18,14 @@ class HomePageTest(TestCase):
         Comprova si s'arriba a la pàgina principal
         :return:
         """
-        found = resolve('/')
-        self.assertEqual(found.func, principal)
+        client = Client()
+        response = client.get('/')
+        self.assertEqual(response.status_code, 404)
+
+        response = client.get(reverse('competicio:index'))
+        self.assertEqual(response.status_code, 200)
+        # found = resolve('/')
+        # self.assertEqual(found.func, principal)
 
 
     def test_competicio_page_correct(self):
@@ -27,10 +34,24 @@ class HomePageTest(TestCase):
         s'obté el document correcte
         :return:
         """
-        request = HttpRequest()
-        resposta = principal(request)
-        expected_html = render_to_string('home.html')
-        self.assertEqual(resposta.content.decode(), expected_html)
+
+        request = RequestFactory().get('/')
+        view = IndexView.as_view()
+        # Run.
+        resposta = view(request)
+
+        contingut = resposta.render()
+
+        self.assertEqual(resposta.status_code, 200)
+        self.assertEqual(contingut.content, render_to_string('home.html'))
+        # self.assertEqual(resposta.context_data['name'], name)
+
+
+        # client = Client()
+        # request = HttpRequest()
+        # resposta = client.get(reverse('competicio:llista_competicio'))
+        # expected_html = render_to_string('home.html')
+        # self.assertEqual(resposta.content.decode(), expected_html)
 
     def test_recupera_competicio_amb_id(self):
         """

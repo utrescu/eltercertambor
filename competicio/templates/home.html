@@ -5,8 +5,16 @@
     <title>Competicions</title>
 </head>
 <body>
-{% for competicio in latest_competition_list %}
-    <p>{{competicio.text}}</p>
-{% endfor %}
+
+{% if latest_competition_list %}
+    <ul>
+    {% for competicio in latest_competition_list %}
+        <li><a href="{% url 'detail' competicio.id %}/">{{ competicio.text }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No hi ha competicions.</p>
+{% endif %}
+
 </body>
 </html>

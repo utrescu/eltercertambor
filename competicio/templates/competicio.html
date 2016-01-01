@@ -6,8 +6,8 @@
 </head>
 <body>
 <table>
-{%  for item in problemes %}
-    <tr><td>{{ forloop.counter }}: <a href="{{item.id}}">{{ item.text }}</a></td></tr>
+{%  for problema in problemes %}
+    <tr><td>{{ forloop.counter }}: <a href="{% url 'detail' problema.id %}">{{ problema.text }}</a></td></tr>
 {% endfor %}
 </table>
 </body>

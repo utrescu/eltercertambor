@@ -18,6 +18,7 @@ class Competicio(models.Model):
 
 #    vots = models.IntegerField(default=0)
 
+
 class Prova(models.Model):
     competicio = models.ForeignKey(Competicio)
     prova_titol = models.CharField(max_length=200)
@@ -26,7 +27,7 @@ class Prova(models.Model):
     prova_date = models.DateTimeField('date published')
     prova_intents = models.BigIntegerField()
     
-    def isEnabled(self):
+    def enabled(self):
         return self.prova_date >= timezone.now()
     
     def __unicode__(self):

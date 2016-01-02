@@ -28,7 +28,8 @@ class Prova(models.Model):
     intents = models.BigIntegerField()
     
     def enabled(self):
-        return self.datainici >= timezone.now()
+        return True
+        # return self.datainici >= timezone.now()
     
     def __unicode__(self):
         return self.competicio + " " + self.titol

@@ -31,18 +31,17 @@ def llista_competicio(request, competicio_id):
 
     problemes = Prova.objects.filter(competicio_id=competicio_id)
 
+
     return render(request, 'competicio.html', {'competicio': competicio, 'problemes': problemes})
 
 
 def prova(request, competicio_id, prova_id):
 
-    Prova.objects.get(pk=prova_id)
-
     try:
         prova = Prova.objects.get(pk=prova_id)
     except Prova.DoesNotExist:
         raise Http404("Question does not exist")
-    return render(request, 'competicio.html', {'prova': prova})
+    return render(request, 'prova.html', {'prova': prova})
 
 
 

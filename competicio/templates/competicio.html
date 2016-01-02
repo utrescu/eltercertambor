@@ -1,14 +1,16 @@
-<!DOCTYPE html>
-<html lang="ca-ES" xmlns="http://www.w3.org/1999/html">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ competicio.text }}</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block content %}
 <table>
-{%  for problema in problemes %}
-    <tr><td>{{ forloop.counter }}: <a href="{% url 'detail' problema.id %}">{{ problema.text }}</a></td></tr>
+{%  for problema in problemes.all %}
+    <tr><td>
+        {{ forloop.counter }}:
+        {%  if problema.enabled %}
+            <a href="{{ problema.id }}">{{ problema.titol }}</a>
+        {%  else %}
+            {{ problema.titol }}
+        {% endif %}
+    </td></tr>
 {% endfor %}
 </table>
-</body>
-</html>
+{% endblock %}

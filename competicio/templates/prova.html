@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+           <h2>{{ prova.titol }}</h2>
+           <p>{{ prova.text }}</p>
+           <form action="" method="POST">
+                <p>Resposta: <input type="text" name="resultat"/><input type="submit"/></p>
+           </form>
+{% endblock %}

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns="http://www.w3.org/1999/html">
 <head>
     <meta charset="UTF-8">
     <title>{{ prova.titol }}</title>
@@ -7,9 +7,36 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">
 </head>
 <body>
-<div class="page-header">
-    <h1><a href="/">Competici&oacute;</a></h1>
-</div>
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="#">
+        <img alt="Competici&oacute;" src="...">
+      </a>
+    </div>
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+       <ul class="nav navbar-nav">
+          <li>{{ prova.titol }}</li>
+          <li class="active"><a href="#">Estad&iacute;stiques <span class="sr-only">(current)</span></a></li>
+          <li><a href="#">Classificaci&oacute;</a></li>
+       </ul>
+        <ul class="nav navbar-nav navbar-right">
+            <li><p class="navbar-text">{{  user }}</p></li>
+            <li>
+            {% if user.is_anonymous %}
+                <form class="navbar-form navbar-left" action="{% url 'django.contrib.auth.views.login' %}">
+                    <button type="submit" class="btn btn-default">Login</button>
+                </form>
+            {% else %}
+                <form class="navbar-form navbar-left" action="{% url 'django.contrib.auth.views.logout' %}">
+                    <button type="submit" class="btn btn-default">Logout</button>
+                </form>
+            {% endif %}
+            </li>
+        </ul>
+    </div>
+  </div>
+</nav>
 <div class="content container">
     <div class="row">
         <div class="col-md-8">

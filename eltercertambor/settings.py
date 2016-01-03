@@ -57,7 +57,7 @@ ROOT_URLCONF = 'eltercertambor.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': ['competicio/templates' ],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -69,6 +69,7 @@ TEMPLATES = [
         },
     },
 ]
+
 
 WSGI_APPLICATION = 'eltercertambor.wsgi.application'
 
@@ -98,6 +99,10 @@ USE_L10N = True
 
 USE_TZ = True
 
+# Personalitzacio del proces de Login
+# Perque funcioni el logout s'ha d'afegir el directori de plantilles /competicio/templates
+AUTH_USER_MODEL = 'competicio.Usuari'
+LOGIN_REDIRECT_URL = '/competicio'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/

@@ -35,14 +35,24 @@ def llista_competicio(request, competicio_id):
     return render(request, 'competicio.html', {'competicio': competicio, 'problemes': problemes})
 
 
-def prova(request, competicio_id, prova_id):
+def valorarProva(request, competicio_id, prova_id):
 
     try:
         prova = Prova.objects.get(pk=prova_id)
     except Prova.DoesNotExist:
         raise Http404("Question does not exist")
-    return render(request, 'prova.html', {'prova': prova})
 
+    if request.method == 'GET':
+        return render(request, 'prova.html', {'prova': prova})
+    elif request.method == 'POST':
+
+        # Mirar si hi ha resposta ...
+        resposta_donada = request.POST.get("resultat", "")
+        if prova.resposta == resposta_donada:
+            # Assignar el punt a l'usuari
+            return render(request, 'provaok.html')
+        else:
+            return render(request, 'provako.html')
 
 
 def estadistiques(request):

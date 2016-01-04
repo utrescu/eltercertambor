@@ -37,7 +37,7 @@ class Prova(models.Model):
     intents = models.IntegerField(default=0)
     
     def enabled(self):
-        return self.datainici >= timezone.now()
+        return self.datainici <= timezone.now()
 
     def __unicode__(self):
         return self.competicio + " " + self.titol
@@ -46,7 +46,7 @@ class Prova(models.Model):
         return self.competicio + " " + self.titol
 
 
-class UserResolutions:
+class UserResolutions(models.Model):
     """
     Classe per portar el compte de les proves que ha solucionat
     un determinat usuari
@@ -54,8 +54,8 @@ class UserResolutions:
     user = models.ForeignKey(Usuari)
     prova = models.ForeignKey(Prova)
     datacreacio = models.DateTimeField(auto_now_add=True)
-    intents = models.BigIntegerField()
-    dataresolucio = models.DateTimeField()
+    intents = models.BigIntegerField(default=0)
+    dataresolucio = models.DateTimeField(null=True, blank=True)
     solucionat = models.BooleanField(default=False)
 
     def solved(self):

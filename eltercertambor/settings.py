@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Django settings for eltercertambor project.
 
@@ -99,10 +100,12 @@ USE_L10N = True
 
 USE_TZ = True
 
-# Personalitzacio del proces de Login
-# Perque funcioni el logout s'ha d'afegir el directori de plantilles /competicio/templates
+# Personalitzacio del proces de Login i el compte d'usuari
+# Perque funcioni el logout s'ha d'afegir el directori de plantilles /competicio/templates o
+#   bé agafa la pantalla de Django.
 AUTH_USER_MODEL = 'competicio.Usuari'
 LOGIN_REDIRECT_URL = '/competicio'
+LOGIN_URL='/competicio/login'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.8/howto/static-files/

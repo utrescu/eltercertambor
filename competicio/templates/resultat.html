@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+    <div class="row">
+        <div class="col-md-2">
+            Sidebar content
+        </div>
+        <div class="col-md-10">
+           <h2>{{ prova }}</h2>
+           <p>La teva resposta '{{ resposta }}' és:</p>
+           {%  if encert %}
+                <h3>CORRECTA!</h3>
+           {%  else %}
+                <h3>incorrecta</h3>
+           {% endif %}
+            <div>
+               <p><a href="{{ origen }}">Tornar a la prova</a></p>
+            </div>
+        </div>
+    </div>
+    </div>
+{% endblock %}

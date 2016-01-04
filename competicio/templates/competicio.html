@@ -1,16 +1,25 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<table>
-{%  for problema in problemes.all %}
-    <tr><td>
-        {{ forloop.counter }}:
-        {%  if problema.enabled %}
-            <a href="{{ problema.id }}">{{ problema.titol }}</a>
-        {%  else %}
-            {{ problema.titol }}
-        {% endif %}
-    </td></tr>
-{% endfor %}
-</table>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                Sidebar content
+            </div>
+            <div class="col-md-10">
+                 <table>
+                {%  for problema in problemes.all %}
+                    <tr><td>
+                        {{ forloop.counter }}:
+                        {%  if problema.enabled %}
+                            <a href="{{ problema.id }}">{{ problema.titol }}</a>
+                        {%  else %}
+                            {{ problema.titol }}
+                        {% endif %}
+                    </td></tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
 {% endblock %}

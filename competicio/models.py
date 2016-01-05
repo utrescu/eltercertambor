@@ -51,7 +51,7 @@ class UserResolutions(models.Model):
     Classe per portar el compte de les proves que ha solucionat
     un determinat usuari
     """
-    user = models.ForeignKey(Usuari)
+    user = models.ForeignKey(Usuari, blank=True, null=True)
     prova = models.ForeignKey(Prova)
     datacreacio = models.DateTimeField(auto_now_add=True)
     intents = models.BigIntegerField(default=0)

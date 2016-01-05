@@ -32,7 +32,7 @@ def llista_competicio(request, competicio_id):
 
     problemes = Prova.objects.filter(competicio_id=competicio_id)
 
-    return render(request, 'competicio.html', {'competicio': competicio, 'problemes': problemes})
+    return render(request, 'competicio.html', {'titol_competicio': competicio, 'problemes': problemes})
 
 
 @login_required

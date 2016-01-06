@@ -32,21 +32,33 @@ def llista_competicio(request, competicio_id):
 
     problemes = Prova.objects.filter(competicio_id=competicio_id)
 
-    return render(request, 'competicio.html', {'titol_competicio': competicio, 'problemes': problemes})
+    return render(request, 'competicio.html', {'titol_competicio': competicio,
+                                               'imatge': competicio.imatge.url,
+                                               'problemes': problemes})
 
 
 @login_required
 def valorar_prova(request, competicio_id, prova_id):
 
+    # No permetre proves no existents
     try:
         prova_actual = Prova.objects.get(pk=prova_id)
     except Prova.DoesNotExist:
         raise Http404("Question does not exist")
 
+    # Mirar si ja havia llegit l'enunciat
+    usuari = Usuari.objects.get(id=request.user.id)
+    solucio, _ = UserResolutions.objects.get_or_create(user=usuari, prova=prova_actual)
+
+
+
+
     if request.method == 'GET':
-        return render(request, 'prova.html', {'competicio': prova_actual.competicio.text,
+        return render(request, 'prova.html', {'titol_competicio': prova_actual.competicio.text,
                                               'prova': prova_actual,
-                                              'origen': request.get_full_path().rsplit("/",2)[0]
+                                              'origen': request.get_full_path().rsplit("/",2)[0],
+                                              'resolta': solucio.solucionat,
+                                              'resposta': prova_actual.resposta
                                               })
     elif request.method == 'POST':
         # Mirar si hi ha resposta ...

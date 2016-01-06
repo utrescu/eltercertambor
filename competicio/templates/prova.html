@@ -3,19 +3,31 @@
 {% block content %}
     <div class="container">
     <div class="row">
-        <div class="col-md-2">
-            Sidebar content
+        <div class="col-md-4">
+            <img src="{{ imatge }}" class="img-responsive">
         </div>
-        <div class="col-md-10">
-           <h2>{{ prova.titol }}</h2>
-           <p>{{ prova.text }}</p>
-           <form action="" method="POST">
-                {% csrf_token %}
-                <p>Resposta: <input type="text" name="resultat"/><input type="submit"/></p>
-           </form>
-           <div>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{ prova.titol }}</div>
+                <div class="panel-body">{{ prova.text }}</div>
+            </div>
+            <div>
+                {%  if not resolta %}
+                   <form action="" method="POST" role="form">
+                        {% csrf_token %}
+                       <div class="form-group">
+                            <label for="email" for="resultat">Resposta:</label>
+                            <input type="text" class="form-control" id="resultat" name="resultat">
+                        </div>
+                        <input type="submit" class="btn btn-default"/></p>
+                   </form>
+                {% else %}
+                    <div class="well">La teva resposta és {{ resposta }}</div>
+                {% endif %}
+            </div>
+            <div>
                <p><a href="{{ origen }}">Tornar a la llista</a></p>
-           </div>
+            </div>
         </div>
     </div>
     </div>

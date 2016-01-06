@@ -3,17 +3,20 @@
 {% block content %}
     <div class="container">
     <div class="row">
-        <div class="col-md-2">
-            Sidebar content
+        <div class="col-md-4">
+            <img src="{{ imatge }}" class="img-responsive">
         </div>
-        <div class="col-md-10">
-           <h2>{{ prova }}</h2>
-           <p>La teva resposta '{{ resposta }}' és:</p>
+        <div class="col-md-8">
+            <div class="panel panel-default">
+                <div class="panel-heading">{{ prova.titol }}</div>
+                <div class="panel-body">La teva resposta '{{ prova.text }}' és: </div>
+            </div>
            {%  if encert %}
-                <h3>CORRECTA!</h3>
+               <div class="alert alert-success">CORRECTA</div>
            {%  else %}
-                <h3>incorrecta</h3>
+               <div class="alert alert-danger">Incorrecta</div>
            {% endif %}
+            </div>
             <div>
                <p><a href="{{ origen }}">Tornar a la prova</a></p>
             </div>

@@ -179,6 +179,22 @@ class ProvaViewTest(TestCase):
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
+    def test_usuari_correcte_resposta_suma(self):
+        # Fer login
+        self.client = Client()
+        haEntrat = self.client.login(username=USERNAME, password=PASSWORD)
+
+        # Enviar POST a la pàgina de la prova
+        url = reverse('llista prova', args=(self.competicio.id,self.prova.id,))
+        response = self.client.post(url,{'resultat': RESPOSTA_CORRECTA}, follow=True)
+        expeted_url = reverse('resultat prova',args=(self.competicio.id,self.prova.id,))
+
+        # És redirigit a la pàgina de resultats
+        self.assertRedirects(response, expeted_url)
+
+        #  - comprovar que ha creat un registre
+        #  - comprovar que ha sumat un més
+
 
     def test_usuari_incorrecte_no_pot_entrar(self):
         # Fer login malament

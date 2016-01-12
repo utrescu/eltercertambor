@@ -1,5 +1,6 @@
 # coding=utf-8
-import urllib, os
+import urllib
+import os
 
 try:
     from unittest import mock
@@ -7,14 +8,9 @@ except ImportError:
     import mock
 
 from django.core.files.uploadedfile import SimpleUploadedFile
-
-from django.core.urlresolvers import resolve
 from django.test import TestCase, Client, RequestFactory
-from django.core.urlresolvers import reverse
-from django.template.loader import render_to_string
 from django.http import HttpRequest
 
-from competicio.models import Competicio
 from competicio.views import *
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -32,21 +28,26 @@ RESPOSTA_INCORRECTA = 'Incorrecta'
 PRIMERA_COMPETICIO = 'Primera Competicio'
 SEGONA_COMPETICIO = 'Segona Competicio'
 
+PATH_FILE = os.path.join(BASE_DIR, 'images/images/none.png')
 
-def crearUsuari():
+
+def crear_usuari():
     Usuari.objects.create_user(username=USERNAME, password=PASSWORD)
 
-def crearCompeticio(autor, nom):
+
+def crear_competicio(autor, nom):
     competicio1 = Competicio(author=autor)
     competicio1.text = nom
     competicio1.save()
     return competicio1
 
-def crearProva(competicio, text):
-    compe = Prova(competicio=competicio, titol = text,
+
+def crear_prova(competicio, text):
+    compe = Prova(competicio=competicio, titol=text,
                   resposta=RESPOSTA_CORRECTA, datainici=timezone.now())
     compe.save()
     return compe
+
 
 class HomePageTest(TestCase):
 
@@ -58,6 +59,7 @@ class HomePageTest(TestCase):
         client = Client()
         response = client.get(reverse('llista competicions'))
         self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'home.html')
 
         # response = client.get(reverse('competicio:index'))
         # self.assertEqual(response.status_code, 200)
@@ -95,10 +97,10 @@ class LlistaCompeticioTest(TestCase):
     #     crearUsuari()
 
     def setUp(self):
-        crearUsuari()
+        crear_usuari()
         self.autor = Usuari()
         self.autor.save()
-        crearCompeticio(self.autor, "Competicio per emplenar")
+        crear_competicio(self.autor, "Competicio per emplenar")
 
     def test_recupera_competicio_amb_id(self):
         """
@@ -106,7 +108,7 @@ class LlistaCompeticioTest(TestCase):
         en el cas en que existeixi
         :return:
         """
-        competicio1 = crearCompeticio(self.autor, PRIMERA_COMPETICIO)
+        competicio1 = crear_competicio(self.autor, PRIMERA_COMPETICIO)
 
         request = HttpRequest()
         resposta = llista_competicio(request, competicio1.id)
@@ -125,10 +127,10 @@ class LlistaCompeticioTest(TestCase):
 
     def test_recupera_competicio_amb_id_i_te_proves(self):
 
-        competicio1 = crearCompeticio(self.autor, PRIMERA_COMPETICIO)
+        competicio1 = crear_competicio(self.autor, PRIMERA_COMPETICIO)
 
-        crearProva(competicio1, TITOL_1)
-        crearProva(competicio1, TITOL_2)
+        crear_prova(competicio1, TITOL_1)
+        crear_prova(competicio1, TITOL_2)
 
         request = HttpRequest()
         resposta = llista_competicio(request, competicio1.id)
@@ -141,31 +143,43 @@ class LlistaCompeticioTest(TestCase):
         Comprovar que és correcte un formulari amb imatge i text
         :return:
         """
-        post = { 'text': PRIMERA_COMPETICIO }
-        file = { 'imatge': SimpleUploadedFile(name='none2.png',
-                                        content=open(os.path.join(BASE_DIR, 'images/images/none.png'), 'rb').read(),
-                                        content_type='image/png') }
-        formulari = CompeticioForm(post, file)
+        post = {'text': PRIMERA_COMPETICIO}
+        fitxer = {'imatge': SimpleUploadedFile(name='none2.png',
+                                               content=open(PATH_FILE, 'rb').read(),
+                                               content_type='image/png')}
+        formulari = CompeticioForm(post, fitxer)
         self.assertTrue(formulari.is_valid())
 
-    def test_formulari_sense_imatge(self):
+    def test_formulari_sense_imatge_es_correcte(self):
         """
         Comprovar que accepta formularis sense imatge
         :return:
         """
-        post = { 'text': PRIMERA_COMPETICIO }
-        file = { 'imatge': None }
-        formulari = CompeticioForm(post, file)
+        post = {'text': PRIMERA_COMPETICIO}
+        fitxer = {'imatge': None}
+        formulari = CompeticioForm(post, fitxer)
         self.assertTrue(formulari.is_valid())
 
-    def test_formulari_sense_text_no_val(self):
+    def test_formulari_sense_text_no_es_correcte(self):
         """
         Les competicions han de tenir nom
         :return:
         """
-        post = { 'text': '' }
-        file = { 'imatge': None }
-        formulari = CompeticioForm(post, file)
+        post = {'text': ''}
+        fitxer = {'imatge': None}
+        formulari = CompeticioForm(post, fitxer)
+        self.assertFalse(formulari.is_valid())
+
+    def test_formulari_amb_text_repetit_no_es_correcte(self):
+        """
+        Comprova que no es poden crear competicions amb el mateix nom
+        que un que ja existeix
+        :return:
+        """
+        crear_competicio(self.autor, PRIMERA_COMPETICIO)
+        post = {'text': PRIMERA_COMPETICIO}
+        fitxer = {'imatge': None}
+        formulari = CompeticioForm(post, fitxer)
         self.assertFalse(formulari.is_valid())
 
     def test_es_pot_crear_una_competicio(self):
@@ -182,7 +196,13 @@ class LlistaCompeticioTest(TestCase):
         expected_url = reverse('competicio', args=(1,)).rsplit('/', 1)[1]
         self.assertIn(expected_url, resposta['location'])
 
+        # self.assertFormError(response, 'form', 'some_field', 'This field is required.')
+
     def test_anonymous_no_crea_competicions(self):
+        """
+        Si no ha entrat cap usuari la part de crear competicions no funciona
+        :return:
+        """
         text = PRIMERA_COMPETICIO
         imatge = None
         expected_url = reverse('login') + "?next=" + urllib.quote(reverse("nova competicio"), "")
@@ -194,24 +214,44 @@ class LlistaCompeticioTest(TestCase):
         self.assertRedirects(resposta, expected_url)
 
     def test_no_es_pot_crear_la_mateixa_competicio_dos_cops(self):
-        self.fail("Not implemented")
+        """
+        Comprovem que si s'intenta crear una competició amb el mateix nom dues
+        vegades no permet fer-la.
+        :return:
+        """
+        # Creo la competició
+        usuari = Usuari(username="tom")
+        usuari.save()
+        crear_competicio(usuari, PRIMERA_COMPETICIO)
+        # Login
+        self.client = Client()
+        self.client.login(username=USERNAME, password=PASSWORD)
+        # Creo una competició amb un nom que ja hi era
+        text = PRIMERA_COMPETICIO
+        imatge = None
+
+        # No aconsegueixo capturar els Raises
+        # with self.assertRaises(ValidationError):
+        resposta = self.client.post(reverse("nova competicio"), {'text': text, 'imatge': imatge})
+        self.assertContains(resposta, 'Repeticions no acceptades', status_code=200)
 
 
 class LoginTest(TestCase):
 
     def setUp(self):
         # Crear un usuari
-        crearUsuari()
-        # Crear una competició
-        self.competicio = crearCompeticio(self.usuari, PRIMERA_COMPETICIO)
-        # Afegir-li una prova
-        self.prova = crearProva(self.competicio, TITOL_1)
+        crear_usuari()
 
     def test_usuari_correcte_pot_entrar(self):
+        """
+        Comprovar que l'usuari amb les credencials correctes pot entrar en el
+        sistema i queda registrada en la plantilla
+        :return:
+        """
         # Fer login
         self.client = Client()
-        haEntrat = self.client.login(username=USERNAME, password=PASSWORD)
-        self.assertTrue(haEntrat)
+        haentrat = self.client.login(username=USERNAME, password=PASSWORD)
+        self.assertTrue(haentrat)
 
         # Anar a la pàgina d'inici
         url = reverse('llista competicions')
@@ -222,10 +262,15 @@ class LoginTest(TestCase):
         self.assertIn(USERNAME, response.content.decode())
 
     def test_usuari_i_contrasenya_incorrecta_no_entra(self):
+        """
+        Comprovar que si es falla la contrasenya si l'usuari va a la pàgina
+        principal encara és anonymous
+        :return:
+        """
         # Fer login
         self.client = Client()
-        haEntrat = self.client.login(username=USERNAME, password=PASSWORD_NO_CORRECTE)
-        self.assertFalse(haEntrat)
+        haentrat = self.client.login(username=USERNAME, password=PASSWORD_NO_CORRECTE)
+        self.assertFalse(haentrat)
         # Anar a la pàgina d'inici (i pot fer-ho)
         url = reverse('llista competicions')
         response = self.client.get(url)
@@ -234,17 +279,24 @@ class LoginTest(TestCase):
         # Però no està identificat
         self.assertIn(ANONYMOUS, response.content.decode())
 
+
 class ProvaViewTest(TestCase):
 
     def setUp(self):
         # Crear un usuari
-        crearUsuari()
+        crear_usuari()
+        # Un usuari per crear una competició
+        self.usuari = Usuari()
+        self.usuari.save()
         # Crear una competició
-        self.competicio = crearCompeticio(self.usuari, PRIMERA_COMPETICIO)
-        self.prova = crearProva(self.competicio, TITOL_1)
-
+        self.competicio = crear_competicio(self.usuari, PRIMERA_COMPETICIO)
+        self.prova = crear_prova(self.competicio, TITOL_1)
 
     def test_no_es_pot_anar_a_proves_no_existents(self):
+        """
+        Comprovar que ningú pot accedir a una pàgina de proves que no existeixen
+        :return:
+        """
         self.client = Client()
         self.client.login(username=USERNAME, password=PASSWORD)
         # with self.assertRaises(Http404):
@@ -252,54 +304,59 @@ class ProvaViewTest(TestCase):
         resposta = self.client.get(url)
         self.assertEqual(resposta.status_code, 404)
 
-
     def test_usuari_correcte_pot_entrar(self):
+        """
+        Comprovar que un usuari que existeix pot entrar en el sistema i
+        arribar a una pàgina de proves
+        :return:
+        """
         # Fer login
         self.client = Client()
         self.client.login(username=USERNAME, password=PASSWORD)
 
         # Anar a la pàgina de la prova
-        url = reverse('llista prova', args=(self.competicio.id,self.prova.id,))
+        url = reverse('llista prova', args=(self.competicio.id, self.prova.id,))
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_usuari_correcte_resposta_suma(self):
+        """
+        Comprovar que quan un usuari contesta una prova s'incrementa el valor
+        dels intents en el registre
+        :return:
+        """
         # Fer login
         self.client = Client()
-        haEntrat = self.client.login(username=USERNAME, password=PASSWORD)
+        self.client.login(username=USERNAME, password=PASSWORD)
 
         # Enviar POST a la pàgina de la prova
-        url = reverse('llista prova', args=(self.competicio.id,self.prova.id,))
-        response = self.client.post(url,{'resultat': RESPOSTA_CORRECTA}, follow=True)
-        expeted_url = reverse('resultat prova',args=(self.competicio.id,self.prova.id,))
+        url = reverse('llista prova', args=(self.competicio.id, self.prova.id,))
+        response = self.client.post(url, {'resultat': RESPOSTA_CORRECTA}, follow=True)
+        expeted_url = reverse('resultat prova', args=(self.competicio.id, self.prova.id,))
 
         # És redirigit a la pàgina de resultats
         self.assertRedirects(response, expeted_url)
 
-        #  - comprovar que ha creat un registre
-        #  - comprovar que ha sumat un més
-
+        # TODO - comprovar que ha creat un registre
+        # TODO - comprovar que ha sumat un més
 
     def test_usuari_incorrecte_no_pot_entrar(self):
+        """
+        Comprovar que no es pot entrar en una pàgina d'una prova si no
+        s'ha fet login
+        :return:
+        """
         # Fer login malament
         self.client = Client()
-        haEntrat = self.client.login(username=USERNAME, password=PASSWORD_NO_CORRECTE)
-        self.assertFalse(haEntrat)
+        haentrat = self.client.login(username=USERNAME, password=PASSWORD_NO_CORRECTE)
+        self.assertFalse(haentrat)
 
         # Anar a la pàgina de la prova
-        url = reverse('llista prova', args=(self.competicio.id,self.prova.id,))
+        url = reverse('llista prova', args=(self.competicio.id, self.prova.id,))
         response = self.client.get(url, follow=True)
         # Es redirigeix a la pàgina de login perquè no està identificat
         expected_url = reverse('login') + "?next=" + urllib.quote(url, "")
         self.assertRedirects(response, expected_url)
-
-
-
-
-
-
-
-
 
 
 class CompeticioModelTest(TestCase):
@@ -313,8 +370,8 @@ class CompeticioModelTest(TestCase):
         autor = Usuari()
         autor.save()
 
-        crearCompeticio(autor, PRIMERA_COMPETICIO)
-        crearCompeticio(autor, SEGONA_COMPETICIO)
+        crear_competicio(autor, PRIMERA_COMPETICIO)
+        crear_competicio(autor, SEGONA_COMPETICIO)
 
         desats = Competicio.objects.all()
         self.assertEqual(desats.count(), 2)

@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
-
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.utils import timezone
@@ -62,7 +60,7 @@ class UserResolutions(models.Model):
         return self.solucionat
 
     def __unicode__(self):
-        return self.user.get_username() + ' ' + self.prova.id + ' : ' + self.solved()
+        return "%s %d %s" % (self.user.get_username(), self.prova.id, self.solved())
 
     def __str__(self):
-        return self.user.get_username() + ' ' + self.prova.id + ' : ' + self.solved()
+        return "%s %d %s" % (self.user.get_username(), self.prova.id, self.solved())

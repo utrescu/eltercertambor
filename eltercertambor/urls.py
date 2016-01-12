@@ -16,8 +16,10 @@ Including another URLconf
 from django.conf.urls import include, url, patterns
 from django.contrib import admin
 from django.conf import settings
+from django.http import HttpResponseRedirect
 
 urlpatterns = [
+    url(r'^$', lambda r: HttpResponseRedirect('competicio/')),
     url(r'^competicio/', include('competicio.urls')),
     url(r'^admin/', include(admin.site.urls)),
 ]

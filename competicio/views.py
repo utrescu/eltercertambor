@@ -10,6 +10,7 @@ from django.utils import timezone
 from .models import Competicio, Prova, Usuari, UserResolutions
 from .forms import CompeticioForm
 
+
 class IndexView(generic.ListView):
     """
     Vista de la pàgina principal.
@@ -30,6 +31,7 @@ class IndexView(generic.ListView):
         context['titol_competicio'] = 'Competicions'
         return context
 
+
 # def principal(request):
 #     latest_competition_list = Competicio.objects.order_by('-id')[:5]
 #     return render(request, 'home.html', latest_competition_list)
@@ -45,7 +47,7 @@ def nova_competicio(request):
     if request.method == 'POST':
         form = CompeticioForm(request.POST, request.FILES)
         if form.is_valid():
-            # Comprovar que la competició no existia...
+            # Comprovar que la competició no existia... (ho fa el formulari)
 
             # Crear la competicio
             nova = Competicio()
@@ -55,9 +57,12 @@ def nova_competicio(request):
             nova.save()
 
             # Redirigir a la llista de competicions
-            return redirect(reverse('competicio', args=(nova.id,)) )
+            return redirect(reverse('competicio', args=(nova.id,)))
+        else:
+            return HttpResponse('Repeticions no acceptades')
 
     return HttpResponse('allowed only via POST')
+
 
 def llista_competicio(request, competicio_id):
     """
@@ -101,13 +106,10 @@ def valorar_prova(request, competicio_id, prova_id):
     usuari = Usuari.objects.get(id=request.user.id)
     solucio, _ = UserResolutions.objects.get_or_create(user=usuari, prova=prova_actual)
 
-
-
-
     if request.method == 'GET':
         return render(request, 'prova.html', {'titol_competicio': prova_actual.competicio.text,
                                               'prova': prova_actual,
-                                              'origen': request.get_full_path().rsplit("/",2)[0],
+                                              'origen': request.get_full_path().rsplit("/", 2)[0],
                                               'resolta': solucio.solucionat,
                                               'resposta': prova_actual.resposta
                                               })
@@ -142,16 +144,17 @@ def resultat_prova(request, competicio_id, prova_id):
     resposta = request.session['resposta']
     try:
         resultat = UserResolutions.objects.get(user_id=request.user.id, prova_id=prova_id)
-        if (resultat.solucionat):
+        if resultat.solucionat:
             resposta = resultat.prova.resposta
     except UserResolutions.DoesNotExist:
         raise Http404("Petició no correcta")
 
-    return render(request, 'resultat.html', {'encert':resultat.solucionat,
-                                             'prova': resultat.prova.text,
-                                             'resposta':resposta,
-                                             'origen': request.get_full_path().rsplit("/",1)[0]
-                                             })
+    return render(request, 'resultat.html',
+                  {'encert': resultat.solucionat,
+                   'prova': resultat.prova.text,
+                   'resposta': resposta,
+                   'origen': request.get_full_path().rsplit("/", 1)[0]
+                   })
 
 
 def estadistiques(request):
